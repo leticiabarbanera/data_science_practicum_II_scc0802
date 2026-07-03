@@ -1,42 +1,42 @@
-# Multimodal Ensemble & Topographic Re-ranking for Advanced Image Retrieval
+# Dense Information Retrieval & Contrastive Learning for Multi-Label Legal Document Classification
 
-This repository contains an advanced computer vision and information retrieval pipeline developed for large-scale image-to-image and text-to-image search tasks. The core architecture implements a hybrid multi-model embedding ensemble combined with transductive re-ranking and pseudo-relevance feedback algorithms to maximize mean average precision metrics.
+This repository contains an advanced, enterprise-grade Natural Language Processing (NLP) pipeline designed to automate the multi-label classification of complex, unstructured legal documents (such as initial petitions). Moving away from traditional classification heads that struggle with long-form text and technical vocabularies, this project adopts a **Dense Information Retrieval architecture** powered by **Contrastive Learning** and high-performance vector search.
 
-## Project Overview & Strategic Architecture
+## Architectural Overview & Conceptual Framework
 
-Modern information retrieval pipelines often fail when relying on a single visual descriptor. This project circumvents that limitation by leveraging an **ensemble of disparate Foundation Models**:
-1. **SigLIP (Sign Language-Image Pre-training):** Captures robust semantic, contrastive text-image alignment and compositional scene understandings.
-2. **DINOv2:** Captures granular, self-supervised dense visual features, geometric properties, and object-part correspondences independent of textual definitions.
+Standard multi-label text classifiers often collapse when dealing with heavy class imbalances, long contexts, and nuanced domain vocabularies. To achieve high structural maturity, this project frames classification as a **Semantic Vector Search task**:
+1. **Dual-Encoder (Bi-Encoder) Setup:** Leverages a state-of-the-art Portuguese Language Model (**BERTimbau**) to map both the raw legal petitions and enriched legal class descriptions into a shared, continuous vector space.
+2. **Contrastive Representation Learning:** Instead of cross-entropy, the model undergoes metric fine-tuning using **Multiple Negatives Ranking Loss (MNRL)**, forcing the network to minimize the vector distance between a petition and its true legal labels while maximizing the distance against all other labels in the batch.
+3. **Sub-Linear Latency Inference:** Once trained, legal class embeddings are indexed via **FAISS (Facebook AI Similarity Search)**, turning multi-label inference into a high-speed cosine similarity query.
 
-By fusing these latent representations into an optimized joint similarity space and applying **pseudo-classification re-ranking (local neighborhood refinement)**, the pipeline effectively corrects retrieval drift and bridges the semantic-structural gap.
+## Core Engineering & Pipeline Features
 
-## Core Engineering & Algorithmic Workflow
+### 1. Exploratory Data Analysis & Label Dependency Modeling
+* **Multi-Label Explanations:** Investigated structural label correlations, high-sparsity environments, and the mathematical implications of label dependency using specialized multi-label classification frameworks.
+* **Text Normalization:** Engineered custom preprocessing logic to scrub administrative noise, isolate critical legal arguments, and handle the sequence length boundaries of Transformer architectures.
 
-### 1. Multi-Model Feature Extraction (Foundation Models)
-* **Zero-Shot Representations:** Built robust inference pipelines using PyTorch to extract continuous deep feature vectors from large-scale image galleries and queries.
-* **Dual-Topology Embedding:** Harmonized contrastive language-vision embeddings from Google's `SigLIP` with self-supervised visual descriptors from Meta's `DINOv2`.
+### 2. Contrastive Fine-Tuning & Metric Learning
+* Implemented a `SentenceTransformers` training loop utilizing `MultipleNegativesRankingLoss`.
+* Configured the dual-encoder architecture to treat the relationship between a petition text and its detailed legal category profile as a tight semantic pair, vastly expanding the model's zero-shot and few-shot generalization capabilities on rare classes.
 
-### 2. Matrix Algebra Fusion & Similarity Optimization
-* Generated dense multi-gigabyte cosine similarity matrices tracking the geometric alignment between query vectors and gallery pools.
-* **Hyperparameter-Driven Fusion:** Engineered an parameterized blending mechanism ($Similarity_{Final} = \alpha \cdot Sim_{SigLIP} + (1-\alpha) \cdot Sim_{DINOv2}$) to dynamically calibrate the influence of textual-semantic vs. purely visual-structural patterns.
+### 3. High-Performance Indexing with FAISS
+* Exported the fine-tuned dense embeddings into a highly optimized vector index using `faiss-cpu`.
+* Formatted the prediction block to dynamically fetch top-$k$ nearest neighbors via Cosine Similarity, transforming classification from a rigid neural layer computation into a scalable retrieval engine.
 
-### 3. Pseudo-Relevance Feedback & Neighborhood Re-ranking
-* **Pseudo-Labeling Strategies:** Implemented a `pseudo_top_k` algorithm that treats high-confidence top-ranked gallery assets as surrogate targets to refine the original query vectors.
-* **Local Graph Re-ranking:** Enforced local manifold constraints via an optimized reranking pool window ($k$-reciprocal style neighbors) to down-weight false positives and surface structurally isolated true matches.
+### 4. Dynamic Threshold Sweep Optimization
+* **Class-Specific Calibrations:** Addressed severe class imbalances by rejecting static global thresholds. 
+* Implemented an automated optimization sweep across the validation slice to discover custom, class-by-class validation boundaries (*thresholds*), balancing Precision and Recall (F1-Score) independently for each legal category.
 
-### 4. Bayesian/Local Grid Search Optimization
-* Integrated automated optimization strategies using validation boundaries to iteratively converge on the best structural weights (`BEST_ALPHA`), local neighborhood scopes (`BEST_RERANK_POOL_K`), and activation thresholds (`BEST_MIN_CONFIDENCE`).
-* Designed the final inference block to export high-fidelity prediction maps formatted for enterprise submission benchmarks.
+## Technologies & Framework Ecosystem
 
-## Technologies & Deep Learning Ecosystem
+* **Transformer & Embedding Frameworks:** `transformers` (Hugging Face), `sentence-transformers`
+* **Base Large Language Model:** `neuralmind/bert-base-portuguese-cased` (BERTimbau)
+* **Vector Vector Search Engine:** `faiss` (FAISS)
+* **Data Processing & ML Engineering:** `pandas`, `numpy`, `scikit-learn`, `pyarrow` (Parquet parsing)
+* **Visualization & Analytics:** `matplotlib`, `seaborn`
 
-* **Core Deep Learning Framework:** `torch` (PyTorch), `torchvision`
-* **Pre-trained Architecture Hubs:** `transformers` (Hugging Face), `timm` (Torch Image Models)
-* **High-Performance Matrix Processing:** `numpy`, `pandas`, `scipy`
-* **Data Pipelines & Imaging:** `PIL` (Pillow), `pathlib`, `tqdm`
+## Key Engineering Takeaways
 
-## Key Engineering Takeaways & Framework Strengths
-
-* **Cross-Model Complementarity:** The architecture proves that contrastive vision-language models and self-supervised feature extractors yield non-overlapping error profiles. Fusing their geometric spaces drastically expands structural recall.
-* **Manifold Alignment via Re-ranking:** Applying pseudo-relevance feedback corrected for vector space distortions, pushing true structural matches higher up the retrieval ranking curve even under initial low-confidence conditions.
-* **Production-Ready Inference:** The pipeline operates strictly via vectorized tensor operations, allowing the entire multi-thousand asset gallery mapping and re-ranking matrix to be executed with minimized computational footprint.
+* **Paradigm Shift in Document Tagging:** Proved that framing long-text multi-label categorization as a semantic retrieval task provides vastly more robust boundaries than standard linear classification layers.
+* **Mitigating Label Skewness:** By utilizing Multiple Negatives Ranking Loss, the model learns deep contextual alignments rather than over-indexing on high-frequency keyword correlations.
+* **Production-Grade Infrastructure:** The combination of a fine-tuned Bi-Encoder with a FAISS index allows the entire legal architecture to scale horizontally, processing high-volume daily legal filings with sub-millisecond inference latency.
