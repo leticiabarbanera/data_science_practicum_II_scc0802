@@ -1,4 +1,4 @@
-# Multimodal Ensemble & Topographic Re-ranking for Advanced Image Retrieval
+# Multimodal Ensemble & Topographic Re-ranking for Image Retrieval
 
 This repository contains an advanced computer vision and information retrieval pipeline developed for large-scale image-to-image and text-to-image search tasks. The core architecture implements a hybrid multi-model embedding ensemble combined with transductive re-ranking and pseudo-relevance feedback algorithms to maximize mean average precision metrics.
 
